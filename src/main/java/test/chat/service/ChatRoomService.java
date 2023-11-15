@@ -3,6 +3,7 @@ package test.chat.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import test.chat.dto.ChatRoomDTO;
 import test.chat.dto.MemberDto;
 import test.chat.entity.ChatRoom;
 import test.chat.entity.Member;
@@ -52,16 +53,17 @@ public class ChatRoomService {
     }
 
     // 유저의 채팅 목록 가져오기
-    public List<ChatRoom> findRooms(MemberDto memberDto, int page, int size) {
+    public List<ChatRoom> findRooms(MemberDto memberDto) {
         Member member = memberRepository.findByUsername(memberDto.getUsername());
         List<ChatRoom> chatRooms = roomRepository.findAllBySenderOrReceiver(member,member);
         return chatRooms;
     }
 
     // 채팅방 하나 찾기
-    public ChatRoom findRoom(long roomId) {
+    public ChatRoomDTO findRoom(long roomId) {
         ChatRoom chatRoom = findExistRoom(roomId);
-        return chatRoom;
+        ChatRoomDTO dto = ChatRoomDTO.toDto(chatRoom);
+        return dto;
     }
 
     // 채팅방 존재 검증

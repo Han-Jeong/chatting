@@ -2,21 +2,30 @@ package test.chat.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.web.socket.WebSocketSession;
-
-import java.util.HashSet;
-import java.util.Set;
+import test.chat.entity.ChatRoom;
+import test.chat.entity.Member;
 
 @Data
+@Builder
 public class ChatRoomDTO {
-    private String roomId; // 채팅방 아이디
-    private String name; // 채팅방 이름
-    private Set<WebSocketSession> sessions = new HashSet<>();
+    private Long roomId; // 채팅방 아이디
+    private String sender;
+    private String receiver;
 
-    @Builder
-    public ChatRoomDTO(String roomId, String name){
-        this.roomId = roomId;
-        this.name = name;
+
+    public static ChatRoomDTO toDto(ChatRoom room){
+        return ChatRoomDTO.builder()
+                .roomId(room.getId())
+                .sender(room.getSender().getUsername())
+                .receiver(room.getReceiver().getUsername())
+                .build();
+    }
+
+    public ChatRoom toEntity(Member sender, Member receiver) {
+        return ChatRoom.builder()
+                .sender(sender)
+                .receiver(receiver)
+                .build();
     }
 
 //    public void handleAction(WebSocketSession session, ChatMessageDTO message, ChatService service) {

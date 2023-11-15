@@ -25,8 +25,9 @@ public class ChatMessageService {
     private final MemberRepository memberRepository;
     private final ChatMessageRepository messageRepository;
 
-    private void saveMessage(ChatMessageDTO dto, Long roomId) {
-        Member member = memberRepository.findByUsername(dto.getSender());
+    @Transactional
+    public void saveMessage(ChatMessageDTO dto, Long roomId) {
+        Member member = memberRepository.findById(dto.getSenderId()).get();
         ChatRoom chatRoom = roomService.findRoom(roomId);
 
         ChatMessage chatMessage = ChatMessage.builder()
