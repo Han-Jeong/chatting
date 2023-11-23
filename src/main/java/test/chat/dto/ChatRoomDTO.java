@@ -5,28 +5,54 @@ import lombok.Data;
 import test.chat.entity.ChatRoom;
 import test.chat.entity.Member;
 
-@Data
-@Builder
+
 public class ChatRoomDTO {
-    private Long roomId; // 채팅방 아이디
-    private String sender;
-    private String receiver;
 
+    @Data
+    @Builder
+    public static class Post{
+        private MemberDto sender;
+        private MemberDto receiver;
 
-    public static ChatRoomDTO toDto(ChatRoom room){
-        return ChatRoomDTO.builder()
-                .roomId(room.getId())
-                .sender(room.getSender().getUsername())
-                .receiver(room.getReceiver().getUsername())
-                .build();
+        public static ChatRoom toEntity(Member sender, Member receiver) {
+            return ChatRoom.builder()
+                    .sender(sender)
+                    .receiver(receiver)
+                    .build();
+        }
     }
 
-    public ChatRoom toEntity(Member sender, Member receiver) {
-        return ChatRoom.builder()
-                .sender(sender)
-                .receiver(receiver)
-                .build();
+    @Data
+    @Builder
+    public static class RoomResponse{
+        private long roomId; // 채팅방 아이디
+        private MemberDto sender;
+        private MemberDto receiver;
+
+        public static RoomResponse toDto(ChatRoom chatRoom) {
+            return ChatRoomDTO.RoomResponse.builder()
+                    .roomId(chatRoom.getId())
+                    .receiver(MemberDto.toDto(chatRoom.getReceiver()))
+                    .sender(MemberDto.toDto(chatRoom.getSender()))
+                    .build();
+        }
     }
+
+
+//    public static ChatRoomDTO toDto(ChatRoom room){
+//        return ChatRoomDTO.builder()
+//                .roomId(room.getId())
+//                .sender(MemberDto.toDto(room.getSender()))
+//                .receiver(MemberDto.toDto(room.getReceiver()))
+//                .build();
+//    }
+//
+//    public ChatRoom toEntity(Member sender, Member receiver) {
+//        return ChatRoom.builder()
+//                .sender(sender)
+//                .receiver(receiver)
+//                .build();
+//    }
 
 //    public void handleAction(WebSocketSession session, ChatMessageDTO message, ChatService service) {
 //        // message 에 담긴 타입을 확인한다.

@@ -3,6 +3,7 @@ package test.chat.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import test.chat.dto.ChatRoomDTO;
 import test.chat.dto.MemberDto;
 import test.chat.entity.ChatRoom;
@@ -21,7 +22,10 @@ public class ChatRoomService {
     private final MemberRepository memberRepository;
     private final ChatRoomRepository roomRepository;
 
+    @Transactional
     public Long createRoom(long receiverId, long senderId) {
+        log.info("receiverId ={}",receiverId);
+        log.info("senderId ={}",senderId);
         Optional<Member> receiverById = memberRepository.findById(receiverId);
         Optional<Member> senderById = memberRepository.findById(senderId);
 
@@ -43,11 +47,12 @@ public class ChatRoomService {
             log.info("find chat room");
             return chatRoom.getId();
         } else {
-            chatRoom = ChatRoom.builder().sender(senderById.get()).receiver(receiverById.get()).build();
+            chatRoom = ChatRoomDTO.Post.toEntity(senderById.get(), receiverById.get());
             log.info("create chat room");
         }
 
         ChatRoom saveChatRoom = roomRepository.save(chatRoom);
+        log.info("saeChatRoomId =", saveChatRoom.getId());
 
         return saveChatRoom.getId();
     }
@@ -60,9 +65,10 @@ public class ChatRoomService {
     }
 
     // 채팅방 하나 찾기
-    public ChatRoomDTO findRoom(long roomId) {
+    @Transactional(readOnly = true)
+    public ChatRoomDTO.RoomResponse findRoom(long roomId) {
         ChatRoom chatRoom = findExistRoom(roomId);
-        ChatRoomDTO dto = ChatRoomDTO.toDto(chatRoom);
+        ChatRoomDTO.RoomResponse dto = ChatRoomDTO.RoomResponse.toDto(chatRoom);
         return dto;
     }
 

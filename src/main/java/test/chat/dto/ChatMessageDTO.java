@@ -13,7 +13,12 @@ import test.chat.entity.Member;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChatMessageDTO {
-    private Long Id;
+    //private Long messageId;
+    public enum MessageType{
+        ENTER, TALK
+    }
+
+    private MessageType messageType;
     private Long roomId; // 방 번호
     private Long senderId; // 채팅을 보낸 사람
     private String message; // 메시지
@@ -22,7 +27,7 @@ public class ChatMessageDTO {
     public static ChatMessageDTO toDto(ChatMessage message) {
         return ChatMessageDTO.builder()
                 .message(message.getContent())
-                .Id(message.getId())
+                //.messageId(message.getId())
                 .roomId(message.getChatRoom().getId())
                 .senderId(message.getSender().getId())
                 .build();

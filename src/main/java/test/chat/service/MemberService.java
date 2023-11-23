@@ -7,7 +7,9 @@ import test.chat.dto.MemberDto;
 import test.chat.entity.Member;
 import test.chat.repository.MemberRepository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,5 +36,11 @@ public class MemberService {
             return MemberDto.toDto(byId.get());
         }
         return null;
+    }
+
+    @Transactional(readOnly = true)
+    public List<MemberDto> findAll() {
+        List<Member> all = memberRepository.findAll();
+        return all.stream().map(MemberDto::toDto).collect(Collectors.toList());
     }
 }
