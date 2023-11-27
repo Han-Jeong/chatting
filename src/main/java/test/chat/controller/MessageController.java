@@ -7,14 +7,12 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import test.chat.dto.ChatMessageDTO;
-import test.chat.dto.MemberDto;
+import test.chat.dto.MemberDTO;
 import test.chat.entity.PublishMessage;
 import test.chat.service.ChatMessageService;
 
@@ -32,11 +30,11 @@ public class MessageController {
     @Resource(name = "chatRedisTemplate")
     private final RedisTemplate redisTemplate;
 
-    @MessageMapping("/chats/{room-id}")
-    public void message(@DestinationVariable(value = "room-id") Long roomId, ChatMessageDTO messageDto) {
+    @MessageMapping("/chat/message")
+    public void message(ChatMessageDTO messageDto) {
 
         PublishMessage publishMessage =
-                new PublishMessage(roomId,
+                new PublishMessage(messageDto.getRoomId(),
                         messageDto.getSenderId(),
                         messageDto.getMessage(),
                         LocalDateTime.now());
@@ -45,23 +43,14 @@ public class MessageController {
         redisTemplate.convertAndSend(topic.getTopic(), publishMessage);
         log.info("레디스 서버에 메세지 전송 완료");
 
-        chatService.saveMessage(messageDto, roomId);
-    }
-
-    @MessageMapping("/hello")
-    @SendTo("/topic/chat")
-    public void message(String message) {
-        PublishMessage publishMessage = new PublishMessage(null, null, message, LocalDateTime.now());
-        // 채팅방에 메세지 전송
-        redisTemplate.convertAndSend(topic.getTopic(), publishMessage);
-        log.info("레디스 서버에 메세지 전송 완료");
+        chatService.saveMessage(messageDto, messageDto.getRoomId());
     }
 
 
     // 채팅메세지 가져오기
     @GetMapping("/chats/messages/{room-id}")
     public ResponseEntity getMessages(@PathVariable("room-id") long roomId,
-                                      MemberDto memberDto) {
+                                      MemberDTO memberDto) {
 
         if(memberDto == null) {
             log.error("인증되지 않은 회원의 접근으로 메세지를 가져올 수 없음");

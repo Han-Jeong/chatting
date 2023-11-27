@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.domain.Auditable;
 
 @Entity
 @Getter
@@ -17,6 +16,7 @@ public class ChatRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
+    private String roomName;
     @ManyToOne
     @JoinColumn(name = "sender_id")
     private Member sender;

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import test.chat.dto.ChatRoomDTO;
-import test.chat.dto.MemberDto;
+import test.chat.dto.MemberDTO;
 import test.chat.entity.ChatRoom;
 import test.chat.entity.Member;
 import test.chat.repository.ChatRoomRepository;
@@ -13,6 +13,7 @@ import test.chat.repository.MemberRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -23,7 +24,7 @@ public class ChatRoomService {
     private final ChatRoomRepository roomRepository;
 
     @Transactional
-    public Long createRoom(long receiverId, long senderId) {
+    public Long createRoom(long receiverId, long senderId,String roomName) {
         log.info("receiverId ={}",receiverId);
         log.info("senderId ={}",senderId);
         Optional<Member> receiverById = memberRepository.findById(receiverId);
@@ -47,7 +48,7 @@ public class ChatRoomService {
             log.info("find chat room");
             return chatRoom.getId();
         } else {
-            chatRoom = ChatRoomDTO.Post.toEntity(senderById.get(), receiverById.get());
+            chatRoom = ChatRoomDTO.Post.toEntity(senderById.get(), receiverById.get(),roomName);
             log.info("create chat room");
         }
 
@@ -58,7 +59,7 @@ public class ChatRoomService {
     }
 
     // 유저의 채팅 목록 가져오기
-    public List<ChatRoom> findRooms(MemberDto memberDto) {
+    public List<ChatRoom> findRooms(MemberDTO memberDto) {
         Member member = memberRepository.findByUsername(memberDto.getUsername());
         List<ChatRoom> chatRooms = roomRepository.findAllBySenderOrReceiver(member,member);
         return chatRooms;
@@ -79,5 +80,11 @@ public class ChatRoomService {
             return optionalChatRoom.get();
         }
         return null;
+    }
+
+    public List<ChatRoomDTO.RoomResponse> findAllRoom() {
+        List<ChatRoom> all = roomRepository.findAll();
+        return all.stream()
+                .map(r -> ChatRoomDTO.RoomResponse.toDto(r)).collect(Collectors.toList());
     }
 }

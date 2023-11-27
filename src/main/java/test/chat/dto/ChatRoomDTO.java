@@ -11,13 +11,15 @@ public class ChatRoomDTO {
     @Data
     @Builder
     public static class Post{
-        private MemberDto sender;
-        private MemberDto receiver;
+        private MemberDTO sender;
+        private MemberDTO receiver;
+        private String roomName;
 
-        public static ChatRoom toEntity(Member sender, Member receiver) {
+        public static ChatRoom toEntity(Member sender, Member receiver, String roomName) {
             return ChatRoom.builder()
                     .sender(sender)
                     .receiver(receiver)
+                    .roomName(roomName)
                     .build();
         }
     }
@@ -26,14 +28,14 @@ public class ChatRoomDTO {
     @Builder
     public static class RoomResponse{
         private long roomId; // 채팅방 아이디
-        private MemberDto sender;
-        private MemberDto receiver;
+        private MemberDTO sender;
+        private MemberDTO receiver;
 
         public static RoomResponse toDto(ChatRoom chatRoom) {
             return ChatRoomDTO.RoomResponse.builder()
                     .roomId(chatRoom.getId())
-                    .receiver(MemberDto.toDto(chatRoom.getReceiver()))
-                    .sender(MemberDto.toDto(chatRoom.getSender()))
+                    .receiver(MemberDTO.toDto(chatRoom.getReceiver()))
+                    .sender(MemberDTO.toDto(chatRoom.getSender()))
                     .build();
         }
     }

@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import test.chat.dto.MemberDto;
+import test.chat.dto.MemberDTO;
 import test.chat.service.MemberService;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public class MemberController {
 
     @GetMapping("member/List")
     public ResponseEntity findMembers() {
-        List<MemberDto> all = memberService.findAll();
+        List<MemberDTO> all = memberService.findAll();
         return new ResponseEntity<>(all, HttpStatus.OK);
     }
 }

@@ -10,12 +10,12 @@ import test.chat.entity.Member;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberDto {
+public class MemberDTO {
     private Long Id;
     private String username;
 
-    public static MemberDto toDto(Member member) {
-        return MemberDto.builder()
+    public static MemberDTO toDto(Member member) {
+        return MemberDTO.builder()
                 .Id(member.getId())
                 .username(member.getUsername())
                 .build();
